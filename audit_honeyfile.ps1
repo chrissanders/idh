@@ -16,7 +16,6 @@ function AddAuditToFile {
     Get-Acl $path -Audit | Format-List Path,AuditToString | Out-File -FilePath 'file_after.txt' -Width 200 -Append
 }
 
-AddAuditToFile "C:\Users\sanders\Documents\auditme.txt"
-
-
-
+for ( $i = 0; $i -lt $args.count; $i++ ) {
+     AddAuditToFile $args[$i]
+ }
