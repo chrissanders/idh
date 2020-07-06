@@ -1,0 +1,9 @@
+<script>
+if (document.domain != "%ACTUALDOMAIN%") {
+    var l = location.href;
+    var r = document.referrer;
+    new Image().src = "http://%WEBSERVER%/pjt9887?l="+
+            encodeURI(l) + "&amp;r=" + encodeURI(r);
+}
+</script>
+
