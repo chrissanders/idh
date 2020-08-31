@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # Chris Sanders
+# Intrusion Detection Honeypots Book
 
 PRT="23"
 LOG=hpot.log

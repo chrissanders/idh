@@ -1,0 +1,10 @@
+# Chris Sanders
+# Intrusion Detection Honeypots Book
+
+alert tcp !$rdp_honeypot_exclusions any -> honeypot_IP_here 3389 (msg:”RDP Honeypot Connection Attempt”; flow:to_server,established; threshold: type limit, track by_src, count 100, seconds 600; classtype:honeypot; sid:50000001; rev:1;)
+
+alert dns $HOME_NET any -> $EXTERNAL_DNS_SERVERS 53 (msg:"Windows Honey Folder Accessed"; dns.query; content:"update.chrissanders.org"; nocase; classtype:honeypot; sid:50000001; rev:1;)
+
+alert tcp any any -> $SQL_SERVER 3306 (msg:"Honey Table Enumeration"; flow:established,to_server; content:"company_users"; classtype:honeypot; sid:50000001; rev:1;)
+
+alert dns $HOME_NET any -> $EXTERNAL_DNS_SERVERS 53 (msg:”MS SQL Honey Table Access”; dns.query; content:“%HONEYPOT_DOMAIN_HERE%”; nocase; classtype:honeypot, sid:50000001; rev:1;)

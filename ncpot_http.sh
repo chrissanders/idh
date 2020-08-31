@@ -1,3 +1,8 @@
+#!/bin/bash
+
+# Chris Sanders
+# Intrusion Detection Honeypots Book
+
 PORT=80
 LOG=hpot.log
 BANNER=`cat index.html`

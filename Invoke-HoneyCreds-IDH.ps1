@@ -1,5 +1,7 @@
 # Adapted from Ben0xa - https://github.com/Ben0xA/PowerShellDefense/blob/master/Invoke-HoneyCreds.ps1
 # Provide honey credentials at the bottom. 
+# Chris Sanders
+# Intrusion Detection Honeypots Book
 
 function Invoke-HoneyCreds {
 	[CmdletBinding()]

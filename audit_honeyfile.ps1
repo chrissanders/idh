@@ -1,5 +1,7 @@
 # This script sets the auditing policy for a honey file.
 # Adapted from Aaron Giuoco's Blog: http://giuoco.org/security/configure-file-and-registry-auditing-with-powershell/
+# Chris Sanders
+# Intrusion Detection Honeypots Book
 
 function AddAuditToFile {
     param

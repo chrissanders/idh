@@ -1,0 +1,370 @@
+# Chris Sanders
+# Intrusion Detection Honeypots Book
+
+title: Successful Login to RDP Honeypot
+description: Connection to RDP honeypot system
+date: 2020/01/01
+tags:
+    - honeypot
+author: Chris Sanders
+logsource:
+    product: windows
+    service: Terminal Services
+detection:
+    selection:
+        EventID: 1149
+        Computer: %HONEYPOT_NAME_HERE%
+    filter:
+	   “Source Network Address”: %CREDENTIALED_SCANNERS%
+    condition: selection and not filter
+fields:
+- “Source Network Address”
+- “User”
+falsepositives:
+    - Undocumented Credentialed Scanners
+    - User Errors
+level: high
+
+
+title: Failed RDP Login Attempt to Honeypot
+description: Attempted RDP login to honeypot system
+date: 2020/01/01
+tags:
+    - honeypot
+author: Chris Sanders
+logsource:
+    product: windows
+    service: security
+detection:
+    selection:
+        EventID: 4625
+        Computer: %HONEYPOT_NAME_HERE%
+    filter:
+	   “Source Network Address”: %SCANNERS%
+    condition: selection and not filter
+fields:
+- “Source Network Address”
+- “Account Name”
+falsepositives:
+    - Undocumented Scanners
+    - User Errors
+level: high
+
+title: Connection to SSH Honeypot
+description: Connection to Cowrie SSH honeypot
+date: 2020/01/01
+tags:
+    - honeypot
+author: Chris Sanders
+logsource:
+    product: cowrie
+    service: ssh_honeypot
+detection:
+    selection:
+        eventid: cowrie.session.connect
+    filter:
+       src_ip: %SCANNERS%
+    condition: selection and not filter
+fields:
+- “src_ip”
+falsepositives:
+    - Undocumented Scanners
+    - User Errors
+level: high
+
+title: Successful Authentication to SSH Honeypot
+description: Successful authentication to Cowrie SSH honeypot
+date: 2020/01/01
+tags:
+    - honeypot
+author: Chris Sanders
+logsource:
+    product: cowrie
+    service: ssh_honeypot
+detection:
+    selection:
+        eventid: cowrie.login.success
+    filter:
+       src_ip: %SCANNERS%
+    condition: selection and not filter
+fields:
+- “src_ip”
+- “username”
+- “password”
+level: critical
+
+title: Connection to HTTP Honeypot
+description: Connection to OpenCanary HTTP honeypot
+date: 2020/01/01
+tags:
+    - honeypot
+author: Chris Sanders
+logsource:
+    product: opencanary
+    service: http_honeypot
+detection:
+    selection:
+        logtype: 3000 
+    filter:
+       src_host: %SCANNERS%
+    condition: selection and not filter
+fields:
+- “src_host”
+- “USERAGENT”
+falsepositives:
+    - Undocumented Scanners
+    - User Errors
+level: high
+
+title: Authentication Attempt to HTTP Honeypot
+description: Someone attempted to authenticate to a login page on an OpenCanary HTTP honeypot
+date: 2020/01/01
+tags:
+    - honeypot
+author: Chris Sanders
+logsource:
+    product: opencanary
+    service: http_honeypot
+detection:
+    selection:
+        logtype: 3001
+    filter:
+       src_host: %SCANNERS%
+    condition: selection and not filter
+fields:
+- "src_host"
+- "USERAGENT"
+- "USERNAME"
+- "PASSWORD"
+level: high
+
+title: Honeydoc Web Bug Triggered
+description: A web bug triggered when a honeydoc was opened. 
+date: 2020/01/01
+tags:
+    - honeypot
+author: Chris Sanders
+logsource:
+    product: honeytoken
+    service: office_honeydoc
+detection:
+    selection:
+        request_line|contains: 
+-   ‘token1’
+-   ‘token2’
+-   ‘token3’
+    condition: selection
+fields:
+-   “Source IP”
+-   “User Agent”
+-   “HTTP Request”
+falsepositives:
+    - User Errors
+level: high
+
+title: Windows Honeydoc Accessed
+description: A user read, deleted, copied, or moved a Honeydoc on a Windows system.
+date: 2020/01/01
+tags:
+    - honeypot
+author: Chris Sanders
+logsource:
+    product: windows
+    service: security
+detection:
+    selection:
+        EventID: 4663
+        Object Name: %HONEYPOT_PATH_AND_FILE_NAMES_HERE% 
+    filter:
+       Process Name: %COMMON_FALSE_POSITIVES_FROM_PROCESSES%
+    condition: selection and not filter
+fields:
+-   “Object Name”
+-   “Computer”
+-   “Account Name”
+-   “Process Name”
+-   “Process ID”
+-   “Accesses”
+falsepositives:
+    - System Processes
+    - User Errors
+level: high
+
+title: Windows Honey Folder Accessed
+description: Someone browsed to a honey folder on a Windows system
+date: 2020/01/01
+tags:
+    - honeypot
+author: Chris Sanders
+logsource:
+    product: windows
+    service: sysmon
+detection:
+    selection:
+        EventID: 22
+    QueryName: *%HONEYPOT_DOMAIN_HERE%
+    condition: selection
+fields:
+    - “QueryName”
+    - “Computer”
+falsepositives:
+    - User Errors
+level: high
+
+title: Honey Token Service Credentials Used
+description: Someone attempted to log in with credentials tied to a honey token service.
+date: 2020/01/01
+tags:
+    - honeypot
+author: Chris Sanders
+logsource:
+    product: windows
+    service: security
+detection:
+    selection:
+        EventID: 4625
+        TargetUserName: %HONEYCRED_USERNAME_HERE%
+    condition: selection
+fields:
+-   SubjectUserName
+-   TargetUserName
+-   TargetDomainName
+-   LogonType
+-   ProcessName
+-   ProcessId
+-   WorkstationName
+-   IpAddress
+level: critical
+
+title: DHCP Honey Service ACK
+description: A DHCP honey service offered an IP address to a network client on a segment where all hosts are statically assigned addresses.
+date: 2020/01/01
+tags:
+    - honeypot
+author: Chris Sanders
+logsource:
+    product: honeypot
+    service: dhcp
+detection:
+    selection:
+        type: DHCPACK
+    condition: selection
+fields:
+-   “Source MAC”
+-   “Client IP”
+falsepositives:
+    - Misconfigurations
+level: high
+
+title: Cloned Website Visit
+description: Someone cloned an internal website and is hosting it elsewhere. This alert fires when someone visits the cloned site. 
+date: 2020/01/01
+tags:
+    - honeypot
+author: Chris Sanders
+logsource:
+    product: honeytoken
+    service: cloned_site
+detection:
+    selection:
+        request_line|contains: 
+      - ‘token1’
+      - ‘token2’
+      - ‘token3’
+    condition: selection
+fields:
+-   “Source IP”
+-   “User Agent”
+-   “HTTP Request”
+falsepositives:
+    - Chrome Lite 
+level: high
+
+title: Honey Table Enumeration
+description: Someone enumerated the contents of a honey table with the SQL SELECT statement. 
+date: 2020/01/01
+tags:
+    - honeypot
+author: Chris Sanders
+logsource:
+    product: mysql
+    service: appdb
+detection:
+    selection:
+        command: Query
+        argument|contains|all: 
+      - SELECT
+            - company_users
+    condition: selection
+fields:
+-   command
+-   argument
+falsepositives:
+    - Database backups
+    - Developer mistakes
+level: high
+
+title: Honey Table Enumeration through Web Server
+description: Someone enumerated the contents of a honey table through a Web Server
+date: 2020/01/01
+tags:
+    - honeypot
+author: Chris Sanders
+logsource:
+    product: mysql
+    service: appdb
+detection:
+    selection:
+        request_line|contains: 
+           - 'company_users'
+    condition: selection
+fields:
+-   “Source IP”
+-   “User Agent”
+-   “HTTP Request”
+level: high
+
+title: MS SQL Honey Table Access
+description: Someone issued a query accessing an MS SQL honey table view
+date: 2020/01/01
+tags:
+    - honeypot
+author: Chris Sanders
+logsource:
+    product: windows
+    service: sysmon
+detection:
+    selection:
+        EventID: 22
+        QueryName: '*%HONEYPOT_DOMAIN_HERE%'
+    condition: selection
+fields:
+-   QueryName
+-   Computer
+falsepositives:
+    - User Errors
+level: high
+
+title: Honey Command Execution
+description: Someone ran a honey command on an internal system. 
+date: 2020/01/01
+tags:
+    - honeypot
+author: Chris Sanders
+logsource:
+    product: honeytoken
+    service: honey_command
+detection:
+    selection:
+        request_line|contains: 
+     - 'uk12'
+     - 'token2'
+     - 'token3'
+    condition: selection
+fields:
+-   “Source IP”
+-   “User Agent”
+-   “HTTP Request”
+falsepositives:
+    - Systems administrator
+level: high
